@@ -1,0 +1,7 @@
+[project]
+name = "eduia-rag"
+version = "0.1.0"
+description = "Teste de RAG"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
