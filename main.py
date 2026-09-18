@@ -1,6 +1,6 @@
 def main():
-    print("Hello from eduia-rag!")
+    print('Hello from eduia-rag!')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
