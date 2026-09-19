@@ -3,6 +3,7 @@ from pathlib import Path
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
 
 from converter import get_paths
@@ -23,7 +24,14 @@ def generate_langchain_documents(files: list[Path]) -> list[Document]:
         with open(file, encoding='utf-8') as f:
             content = f.read()
             markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
-            documents += markdown_splitter.split_text(content)
+            chunks = markdown_splitter.split_text(content)
+
+            recursive_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=800,
+                chunk_overlap=150,
+                separators=['\n\n', '\n', ' ', ''],
+            )
+            documents += recursive_splitter.split_documents(chunks)
 
     return documents
 

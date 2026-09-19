@@ -32,4 +32,5 @@
 
 - [ ] **Usar modelo para descrever as imagens**
 - [ ] **Especificar o uso de títulos em markdown**
+- [ ] **Usar metadados útils nos documentos criados, como (`souce`, `title`, `section`, `discipine`, `file_name`, `page` ou `section_order`)**
 - [ ] **Usar armazenamento na nuvem**
