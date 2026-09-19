@@ -26,7 +26,7 @@
 
 4. **Execute os scripts**
 
-   - [`converter.py`](./converter.py): Arquivo responsável por converter os [documentos](./docs) em markdown. [Estrutura dos documentos](.estrutura_dos_documentos)
+   - [`converter.py`](./converter.py): Arquivo responsável por converter os [documentos](./docs) em markdown. [Estrutura dos documentos](#estrutura-dos-documentos)
    - [`main.py`](./main.py): Arquivo responsável por criar os embeddings com pinecone
 
    ```bash
