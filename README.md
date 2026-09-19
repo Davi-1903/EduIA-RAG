@@ -1,6 +1,14 @@
 # EduIA RAG
 
-**RAG** o sistema [**EduIA**](https://github.com/Davi-1903/EduIA)
+**RAG** do sistema [**EduIA**](https://github.com/Davi-1903/EduIA)
+
+## Estrutura dos documentos
+
+```bash
+docs
+├───converted  # Arquivos convertidos em markdown
+└───raw        # Arquivo cru (até o momento PDFs)
+```
 
 ## Pontos para melhorar
 
