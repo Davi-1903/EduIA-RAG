@@ -6,28 +6,34 @@
 
 1. **Clone o repositório**
 
-    ```bash
-    git clone https://github.com/Davi-1903/EduIA-RAG.git
-    ```
+   ```bash
+   git clone https://github.com/Davi-1903/EduIA-RAG.git
+   ```
 
 2. **Instale as dependências**
 
-    ```bash
-    pip install -r requirements.txt
-    # or
-    uv sync
-    ```
+   ```bash
+   pip install -r requirements.txt
+   # or
+   uv sync
+   ```
 
-3. **Execute o scripts**
+3. **Crie as variáveis de ambiente**
 
-    - [`converter.py`](./converter.py): Arquivo responsável por converter os [documentos](./docs) em markdown. [Estrutura dos documentos](.estrutura_dos_documentos)
-    - [`main.py`](./main.py): Arquivo responsável por criar os embeddings e salvar
+   ```.env
+   PINECONE_API_KEY="<SUA-CHAVE-DE-API-DO-PINECONE>"
+   ```
 
-    ```bash
-    python <arquivo.py>
-    # or
-    uv run <arquivo.py>
-    ```
+4. **Execute os scripts**
+
+   - [`converter.py`](./converter.py): Arquivo responsável por converter os [documentos](./docs) em markdown. [Estrutura dos documentos](.estrutura_dos_documentos)
+   - [`main.py`](./main.py): Arquivo responsável por criar os embeddings com pinecone
+
+   ```bash
+   python <arquivo.py>
+   # or
+   uv run <arquivo.py>
+   ```
 
 > [!TIP]
 > Use ambiente virtual, pois são muitas dependências
@@ -63,4 +69,4 @@ docs
 - [ ] **Usar modelo para descrever as imagens**
 - [ ] **Especificar o uso de títulos em markdown**
 - [ ] **Usar metadados útils nos documentos criados, como (`souce`, `title`, `section`, `discipine`, `file_name`, `page` ou `section_order`)**
-- [ ] **Usar armazenamento na nuvem**
+- [x] **Usar armazenamento na nuvem**

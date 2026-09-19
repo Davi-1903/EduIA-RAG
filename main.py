@@ -1,11 +1,13 @@
+import os
 from pathlib import Path
 from uuid import uuid4
 
-from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_pinecone import PineconeVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
+from pinecone import Pinecone
 
 from converter import get_paths
 
@@ -45,16 +47,18 @@ def main():
     documents = generate_langchain_documents(files)
     print(f'{len(documents)} documentos criados')
 
-    # Salvo em memória, apenas para testes
-    vector_store = Chroma(
-        collection_name='eduia_rag',
-        embedding_function=embeddings,
-        persist_directory='./chroma',
-    )
+    if (pinecone_api_key := os.getenv('PINECONE_API_KEY')) is None:
+        raise RuntimeError('A variável de ambiente "PINECONE_API_KEY" está vazia ou não foi definida')
+
+    pc = Pinecone(api_key=pinecone_api_key)
+    index = pc.Index('eduia-rag')
+    vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+
     vector_store.add_documents(
         documents=documents,
         ids=[str(uuid4()) for _ in range(len(documents))],
     )
+    print('Documentos adicionados com sucesso')
 
 
 if __name__ == '__main__':
