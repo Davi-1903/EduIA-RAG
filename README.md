@@ -4,9 +4,9 @@
 
 ## Disciplinas técnicas da antiga ementa
 
-- [X] **Informática Básica**
-- [X] **Fundamentos de Lógica e Algoritmo**
-- [X] **Princípios de Design e Projeto Gráfico**
+- [x] **Informática Básica**
+- [x] **Fundamentos de Lógica e Algoritmo**
+- [x] **Princípios de Design e Projeto Gráfico**
 - [ ] **Programção Estrutura e Orientada a Objetos**
 - [ ] **Design Web e Arquitetura da Informação**
 - [ ] **Análise e Projeto Orientados a Objetos**
@@ -32,3 +32,4 @@
 
 - [ ] **Usar modelo para descrever as imagens**
 - [ ] **Especificar o uso de títulos em markdown**
+- [ ] **Usar armazenamento na nuvem**
