@@ -1,4 +1,5 @@
 from pathlib import Path
+from uuid import uuid4
 
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
@@ -23,6 +24,7 @@ def generate_langchain_documents(files: list[Path]) -> list[Document]:
     for file in files:
         with open(file, encoding='utf-8') as f:
             content = f.read()
+
             markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
             chunks = markdown_splitter.split_text(content)
 
@@ -51,7 +53,7 @@ def main():
     )
     vector_store.add_documents(
         documents=documents,
-        ids=[f'id{n}' for n in range(1, len(documents) + 1)],
+        ids=[str(uuid4()) for _ in range(len(documents))],
     )
 
 
