@@ -2,6 +2,36 @@
 
 **RAG** do sistema [**EduIA**](https://github.com/Davi-1903/EduIA)
 
+## Como executar
+
+1. **Clone o repositório**
+
+    ```bash
+    git clone https://github.com/Davi-1903/EduIA-RAG.git
+    ```
+
+2. **Instale as dependências**
+
+    ```bash
+    pip install -r requirements.txt
+    # or
+    uv sync
+    ```
+
+3. **Execute o scripts**
+
+    - [`converter.py`](./converter.py): Arquivo responsável por converter os [documentos](./docs) em markdown. [Estrutura dos documentos](.estrutura_dos_documentos)
+    - [`main.py`](./main.py): Arquivo responsável por criar os embeddings e salvar
+
+    ```bash
+    python <arquivo.py>
+    # or
+    uv run <arquivo.py>
+    ```
+
+> [!TIP]
+> Use ambiente virtual, pois são muitas dependências
+
 ## Disciplinas técnicas da antiga ementa
 
 - [x] **Informática Básica**
@@ -23,7 +53,7 @@
 ## Estrutura dos documentos
 
 ```bash
-./docs
+docs
 ├───converted  # Arquivos convertidos em markdown
 └───raw        # Arquivos crus (até o momento PDFs)
 ```
