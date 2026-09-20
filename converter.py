@@ -2,14 +2,11 @@ from pathlib import Path
 
 from markitdown import MarkItDown, MarkItDownException
 
-
-DOCS_PATH = Path('./docs')
-RAW_PATH = DOCS_PATH / 'raw'
-CONVERTED_PATH = DOCS_PATH / 'converted'
+from constants import CONVERTED_PATH, RAW_PATH
 
 
-def get_paths(path: str) -> list[Path]:
-    return [file for file in Path(path).glob('*') if file.is_file() and file.name != '.gitkeep']
+def get_paths(path: Path) -> list[Path]:
+    return [file for file in path.glob('*') if file.is_file() and not file.name.startswith('.')]
 
 
 def convert_to_markdown(path: Path) -> str | None:
@@ -28,16 +25,16 @@ def save_file(file: Path, content: str):
         with file.open(mode='w+', encoding='utf-8') as f:
             f.write(content)
 
-    except FileExistsError:
+    except OSError:
         print(f'O arquivo "{file.name}" já existe')
 
 
 def main():
-    raw_files = get_paths('./docs/raw')
+    raw_files = get_paths(RAW_PATH)
     for file in raw_files:
         content = convert_to_markdown(file)
         if content is not None:
-            save_file(CONVERTED_PATH / f'{file.stem}.md', content)
+            save_file(CONVERTED_PATH / f'{file.name}.md', content)
 
 
 if __name__ == '__main__':
