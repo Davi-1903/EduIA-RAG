@@ -1,0 +1,29 @@
+{
+	"files": [
+		{
+			"path": "main.py",
+			"bookmarks": [
+				{
+					"line": 36,
+					"column": 0,
+					"label": "Adicionar modelo da OpenAI para melhorar os embeddings"
+				},
+				{
+					"line": 49,
+					"column": 0,
+					"label": "Explorar a possibilidade usar código assíncrono"
+				}
+			]
+		},
+		{
+			"path": "converter.py",
+			"bookmarks": [
+				{
+					"line": 12,
+					"column": 0,
+					"label": "Adicionar modelo da OpenAI para visualizar imagens, usar títulos em markdown e preservar a estrutura do documento"
+				}
+			]
+		}
+	]
+}

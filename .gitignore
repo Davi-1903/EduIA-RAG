@@ -17,3 +17,10 @@ docs/**
 !docs/raw/
 !docs/converted/.gitkeep
 !docs/raw/.gitkeep
+
+# IDLE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/bookmarks.json
+.idea/

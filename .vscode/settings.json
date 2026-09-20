@@ -1,0 +1,13 @@
+{
+	"editor.formatOnSave": true,
+	"python.analysis.typeCheckingMode": "standard",
+	"python.analysis.autoImportCompletions": true,
+	"python-envs.defaultEnvManager": "ms-python.python:venv",
+	"bookmarks.saveBookmarksInProject": true,
+	"[python]": {
+		"editor.defaultFormatter": "charliermarsh.ruff",
+		"editor.codeActionsOnSave": {
+			"source.organizeImports.ruff": "always"
+		}
+	}
+}
