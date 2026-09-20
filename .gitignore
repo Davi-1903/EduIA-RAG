@@ -10,3 +10,10 @@ wheels/
 .env*
 !.env.example
 .venv
+
+# Documents
+docs/**
+!docs/converted/
+!docs/raw/
+!docs/converted/.gitkeep
+!docs/raw/.gitkeep
