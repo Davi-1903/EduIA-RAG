@@ -9,24 +9,32 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
 from pinecone import Pinecone
 
-from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
+from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON, MIN_CHUNKS_LENGTH
 from converter import get_paths
 
 
-def generate_langchain_documents(files: list[Path]) -> list[Document]:
+def generate_langchain_documents(file: Path) -> list[Document]:
     header_splitter = MarkdownHeaderTextSplitter(HEADERS_TO_SPLIT_ON, strip_headers=False)
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=800,
         chunk_overlap=150,
         separators=['\n\n', '\n', ' ', ''],
     )
+
+    chunks = header_splitter.split_text(file.read_text(encoding='utf-8'))
+    split_docs = recursive_splitter.split_documents(chunks)
     documents: list[Document] = []
-    for file in files:
-        chunks = header_splitter.split_text(file.read_text(encoding='utf-8'))
-        for idx, doc in enumerate(recursive_splitter.split_documents(chunks)):
-            doc.metadata['source'] = file.name
-            doc.id = str(uuid5(NAMESPACE_URL, f'{file.name}:{idx}'))
-            documents.append(doc)
+    idx = 0
+
+    for doc in split_docs:
+        if len(doc.page_content.strip()) < MIN_CHUNKS_LENGTH:
+            continue
+
+        doc.metadata['source'] = file.name
+        doc.id = str(uuid5(NAMESPACE_URL, f'{file.name}:{idx}'))
+        documents.append(doc)
+        idx += 1
+
     return documents
 
 
@@ -39,16 +47,18 @@ def main():
         encode_kwargs={'normalize_embeddings': True},
     )
 
-    files = get_paths(CONVERTED_PATH)
-    documents = generate_langchain_documents(files)
-    print(f'{len(documents)} documentos criados')
+    try:
+        pc = Pinecone(api_key=pinecone_api_key)
+        index = pc.Index('eduia-rag')
+    except Exception as e:
+        raise RuntimeError(f'Não foi possível se conectar ao pinecone: {e}') from e
 
-    pc = Pinecone(api_key=pinecone_api_key)
-    index = pc.Index('eduia-rag')
     vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
-    vector_store.add_documents(documents=documents)
-    print(f'{len(documents)} documentos adicionados com sucesso')
+    files = get_paths(CONVERTED_PATH)
+    for file in files:
+        documents = generate_langchain_documents(file)
+        vector_store.add_documents(documents=documents)
 
 
 if __name__ == '__main__':

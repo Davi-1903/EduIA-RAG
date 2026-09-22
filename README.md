@@ -98,8 +98,9 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 
 ## Melhorias futuras
 
-- [ ] Usar um modelo da OpenAI para descrever as imagens
+- [ ] Usar um modelo da OpenAI para descrever as imagens e tabelas
 - [ ] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
+- [ ] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
 
 ## Licença
 
