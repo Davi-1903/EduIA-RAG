@@ -13,8 +13,15 @@ from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON, MIN_CHUNKS_LENGTH
 from converter import get_paths
 
 
+def add_headers_context(doc: Document) -> Document:
+    path = ' > '.join(doc.metadata[name] for _, name in HEADERS_TO_SPLIT_ON if name in doc.metadata)
+    if path:
+        doc.page_content = f'{path}\n\n{doc.page_content}'
+    return doc
+
+
 def generate_langchain_documents(file: Path) -> list[Document]:
-    header_splitter = MarkdownHeaderTextSplitter(HEADERS_TO_SPLIT_ON, strip_headers=False)
+    header_splitter = MarkdownHeaderTextSplitter(HEADERS_TO_SPLIT_ON, strip_headers=True)
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=800,
         chunk_overlap=150,
@@ -30,6 +37,7 @@ def generate_langchain_documents(file: Path) -> list[Document]:
         if len(doc.page_content.strip()) < MIN_CHUNKS_LENGTH:
             continue
 
+        doc = add_headers_context(doc)
         doc.metadata['source'] = file.name
         doc.id = str(uuid5(NAMESPACE_URL, f'{file.name}:{idx}'))
         documents.append(doc)
