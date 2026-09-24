@@ -19,7 +19,7 @@
 			"path": "converter.py",
 			"bookmarks": [
 				{
-					"line": 12,
+					"line": 13,
 					"column": 0,
 					"label": "Adicionar modelo da OpenAI para visualizar imagens, usar títulos em markdown e preservar a estrutura do documento"
 				}

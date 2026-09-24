@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from markitdown import MarkItDown, MarkItDownException
+from tqdm import tqdm
 
 from constants import CONVERTED_PATH, RAW_PATH
 
@@ -31,7 +32,7 @@ def save_file(file: Path, content: str):
 
 def main():
     raw_files = get_paths(RAW_PATH)
-    for file in raw_files:
+    for file in tqdm(raw_files, desc='Convertendo arquivos', unit='arquivo'):
         content = convert_to_markdown(file)
         if content is not None:
             save_file(CONVERTED_PATH / f'{file.name}.md', content)
