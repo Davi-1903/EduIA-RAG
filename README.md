@@ -41,6 +41,7 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
     ```env
     PINECONE_API_KEY="<SUA-CHAVE-DE-API-DO-PINECONE>"
+    HUGGINGFACEHUB_API_TOKEN="<SUA-CHAVE-DE-API-DO-HUGGING-FACE>"
     ```
 
 4. **Adicione os documentos a serem convertidos**

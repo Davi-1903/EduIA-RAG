@@ -5,11 +5,12 @@ description = "Teste de RAG"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "langchain-core>=1.6.3",
+    "langchain>=1.4.2",
+    "langchain-chroma>=1.1.0",
     "langchain-huggingface>=1.2.2",
     "langchain-pinecone>=0.2.13",
     "langchain-text-splitters>=1.1.2",
-    "markitdown[docx,pdf,pptx]>=0.1.7",
+    "markitdown[docx,pdf,pptx]>=0.1.8",
     "python-dotenv>=1.2.3",
     "sentence-transformers>=6.1.0",
     "tqdm>=4.70.1",
