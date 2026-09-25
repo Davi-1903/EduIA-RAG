@@ -49,16 +49,16 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 5. **Execute os scripts**
     1. Execute o script [`converter.py`](./converter.py) para transformar os documentos de [`docs/raw/`](./docs/raw/) em Markdown. Os arquivos convertidos serão criados em [`docs/converted/`](./docs/converted/).
-    2. Execute o script [`main.py`](./main.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
+    2. Execute o script [`embeddings.py`](./embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
 
     ```bash
     # Com pip
     python converter.py
-    python main.py
+    python embeddings.py
 
     # Com uv
     uv run converter.py
-    uv run main.py
+    uv run embeddings.py
     ```
 
 ## Estrutura dos documentos
@@ -101,6 +101,8 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 - [ ] Usar um modelo da OpenAI para descrever as imagens e tabelas
 - [ ] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
 - [ ] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
+- [ ] Adicionar testes com IA para validar qualidade dos embeddings gerados
+- [ ] Explorar a estratégia Parent-Child
 
 ## Licença
 
