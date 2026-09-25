@@ -8,6 +8,7 @@ from langchain_pinecone import PineconeVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
 from pinecone import Pinecone
+from tqdm import tqdm
 
 from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON, MIN_CHUNKS_LENGTH
 from converter import get_paths
@@ -64,7 +65,7 @@ def main():
     vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
     files = get_paths(CONVERTED_PATH)
-    for file in files:
+    for file in tqdm(files, desc='Gerando embeddings', unit='embedding'):
         documents = generate_langchain_documents(file)
         vector_store.add_documents(documents=documents)
 

@@ -17,17 +17,17 @@ def convert_to_markdown(path: Path) -> str | None:
         result = md.convert(path)
         return result.markdown
 
-    except MarkItDownException:
-        print(f'Ocorreu um erro ao converter o arquivo "{path.name}"')
+    except MarkItDownException as err:
+        print(f'Ocorreu um erro ao converter o arquivo "{path.name}": {err}')
 
 
 def save_file(file: Path, content: str):
     try:
-        with open(file, mode='w+', encoding='utf-8') as f:
+        with open(file, mode='w', encoding='utf-8') as f:
             f.write(content)
 
-    except OSError:
-        print(f'O arquivo "{file.name}" já existe')
+    except OSError as err:
+        print(f'O arquivo "{file.name}" já existe: {err}')
 
 
 def main():
