@@ -6,13 +6,13 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "langchain>=1.4.2",
-    "langchain-chroma>=1.1.0",
     "langchain-huggingface>=1.2.2",
     "langchain-pinecone>=0.2.13",
     "langchain-text-splitters>=1.1.2",
     "markitdown[docx,pdf,pptx]>=0.1.8",
     "python-dotenv>=1.2.3",
     "sentence-transformers>=6.1.0",
+    "tabulate>=0.10.0",
     "tqdm>=4.70.1",
     "uuid>=1.30",
 ]

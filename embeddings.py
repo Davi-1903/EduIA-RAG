@@ -4,11 +4,12 @@ from uuid import NAMESPACE_URL, uuid5
 
 import torch
 from dotenv import load_dotenv
-from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_pinecone import PineconeVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
+from pinecone import Pinecone
 from tqdm import tqdm
 
 from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
@@ -37,7 +38,7 @@ def delete_old_chunks(index, file: Path, current_chunk_count: int):
         index.delete(ids=candidate_ids[n : n + 1000])
 
 
-def add_documents_in_batches(vector_store: Chroma, documents: list[Document]):
+def add_documents_in_batches(vector_store: PineconeVectorStore, documents: list[Document]):
     for n in tqdm(
         range(0, len(documents), int(get_env('BATCH_SIZE'))),
         desc='Indexando lotes',
@@ -92,19 +93,13 @@ def main():
         encode_kwargs={'normalize_embeddings': True},
     )
 
-    # try:
-    #     pc = Pinecone(api_key=get_env('PINECONE_API_KEY'))
-    #     index = pc.Index(get_env('INDEX_NAME'))
-    # except Exception as e:
-    #     raise RuntimeError(f'Não foi possível se conectar ao pinecone: {e}') from e
+    try:
+        pc = Pinecone(api_key=get_env('PINECONE_API_KEY'))
+        index = pc.Index(get_env('INDEX_NAME'))
+    except Exception as e:
+        raise RuntimeError(f'Não foi possível se conectar ao pinecone: {e}') from e
 
-    # vector_store = PineconeVectorStore(embedding=embeddings, index=index)
-
-    vector_store = Chroma(
-        collection_name=get_env('INDEX_NAME'),
-        embedding_function=embeddings,
-        persist_directory='./chroma_eduia_rag',
-    )
+    vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
     files = get_paths(CONVERTED_PATH)
     total_documents = 0
@@ -115,7 +110,7 @@ def main():
             print(f'Nenhum chunk válido gerado para "{file.name}", pulando...')
             continue
 
-        # delete_old_chunks(index, file, len(documents))
+        delete_old_chunks(index, file, len(documents))
         add_documents_in_batches(vector_store, documents)
         vector_store.add_documents(documents=documents)
         total_documents += len(documents)
