@@ -12,5 +12,3 @@ HEADERS_TO_SPLIT_ON = [
     ('#####', 'Header 5'),
     ('######', 'Header 6'),
 ]
-
-MIN_CHUNKS_LENGTH = 50

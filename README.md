@@ -40,8 +40,16 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     Recomendo criar um arquivo `.env` na raiz do projeto:
 
     ```env
+    # ========================< API KEYS >========================
     PINECONE_API_KEY="<SUA-CHAVE-DE-API-DO-PINECONE>"
     HUGGINGFACEHUB_API_TOKEN="<SUA-CHAVE-DE-API-DO-HUGGING-FACE>"
+
+    # ===========================< IA >===========================
+    HF_EMBEDDING_MODEL="<MODELO-DE-EMBEDDING>"
+    HF_MODEL="<MODELO-DE-IA>"
+    MAX_TOKENS=3000
+    INDEX_NAME="eduia-rag"
+    MIN_CHUNKS_LENGTH="50"
     ```
 
 4. **Adicione os documentos a serem convertidos**
@@ -62,12 +70,14 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     uv run embeddings.py
     ```
 
+    <!-- Adicionar instruções para o relatório -->
+
 ## Estrutura dos documentos
 
 ```text
 docs/
 ├───converted/  # Arquivos convertidos em Markdown
-└───raw/        # Arquivos brutos (até o momento, apenas PDFs)
+└───raw/        # Arquivos brutos
 ```
 
 ## Observações

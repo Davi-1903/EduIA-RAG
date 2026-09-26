@@ -10,6 +10,8 @@ from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langgraph.graph.state import CompiledStateGraph
 from tqdm import tqdm
 
+from embeddings import get_env
+
 
 load_dotenv()
 
@@ -58,19 +60,23 @@ def save_answer(answer: str):
 
 
 def main():
-    # if (pinecone_api_key := os.getenv('PINECONE_API_KEY')) is None:
-    #     raise RuntimeError('A variável de ambiente "PINECONE_API_KEY" está vazia ou não foi definida')
-
     SYSTEM_PROMPT = 'Você é um assistente que responde perguntas usando os materiais de estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar'
 
     embeddings = HuggingFaceEmbeddings(
-        model_name='Qwen/Qwen3-Embedding-0.6B', encode_kwargs={'normalize_embeddings': True}
+        model_name=get_env('HF_EMBEDDING_MODEL'),
+        encode_kwargs={'normalize_embeddings': True},
     )
     vector_store = Chroma(
-        collection_name='eduia-rag', embedding_function=embeddings, persist_directory='./chroma_eduia_rag'
+        collection_name=get_env('INDEX_NAME'),
+        embedding_function=embeddings,
+        persist_directory='./chroma_eduia_rag',
     )
     llm_endpoint = HuggingFaceEndpoint(
-        model='Qwen/Qwen2.5-72B-Instruct', max_new_tokens=3000, temperature=0.1, top_p=0.9, provider='auto'
+        model=get_env('HF_MODEL'),
+        max_new_tokens=int(get_env('MAX_TOKENS')),
+        temperature=0.1,
+        top_p=0.9,
+        provider='auto',
     )
     llm = ChatHuggingFace(llm=llm_endpoint)
     agent = create_agent(
