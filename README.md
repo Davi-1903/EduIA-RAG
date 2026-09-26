@@ -56,21 +56,33 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
     Coloque os arquivos no diretório [`docs/raw/`](./docs/raw/). Veja a [estrutura dos documentos](#estrutura-dos-documentos).
 
-5. **Execute os scripts**
-    1. Execute o script [`converter.py`](./converter.py) para transformar os documentos de [`docs/raw/`](./docs/raw/) em Markdown. Os arquivos convertidos serão criados em [`docs/converted/`](./docs/converted/).
-    2. Execute o script [`embeddings.py`](./embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
+5. **Converta os documentos**
+
+    Execute o script [`converter.py`](./converter.py) para transformar os documentos de [`docs/raw/`](./docs/raw/) em Markdown. Os arquivos convertidos serão criados em [`docs/converted/`](./docs/converted/).
 
     ```bash
     # Com pip
     python converter.py
-    python embeddings.py
 
     # Com uv
     uv run converter.py
+    ```
+
+6. **Gere os embeddings**
+
+    Execute o script [`embeddings.py`](./embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
+
+    ```bash
+    # Com pip
+    python embeddings.py
+
+    # Com uv
     uv run embeddings.py
     ```
 
-    <!-- Adicionar instruções para o relatório -->
+7. **Testar RAG**
+
+    Em breve...
 
 ## Estrutura dos documentos
 
@@ -82,8 +94,6 @@ docs/
 
 ## Observações
 
-- **Reexecutar o `embeddings.py` não duplica vetores.** O ID de cada _chunk_ é gerado a partir do nome do arquivo e da posição do trecho, então uma nova execução sobrescreve os mesmos registros. Se um documento for alterado e passar a gerar menos _chunks_, os registros antigos permanecem no índice e precisam ser removidos manualmente.
-- **O nome do índice (`eduia-rag`) está fixo no código.** Para usar outro índice, altere o `embeddings.py`.
 - **A dimensão do índice deve ser igual à do modelo de _embeddings_.** Ao trocar o modelo, é preciso criar um novo índice, pois a dimensão não pode ser alterada depois da criação.
 - **Consultas:** o `Qwen3-Embedding` rende melhor quando as perguntas usam o _prompt_ de instrução do modelo, enquanto os documentos são indexados sem ele.
 

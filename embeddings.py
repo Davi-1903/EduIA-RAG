@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
+import torch
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
@@ -24,6 +25,30 @@ def get_env(key: str, default: str | None = None) -> str:
     if default is not None:
         return default
     raise RuntimeError(f'A variável de ambiente "{key}" não foi estabelecida ou está vazia')
+
+
+def build_chunk_id(file: Path, idx: int) -> str:
+    return str(uuid5(NAMESPACE_URL, f'{file.name}:{idx}'))
+
+
+def delete_old_chunks(index, file: Path, current_chunk_count: int):
+    candidate_ids = [build_chunk_id(file, idx) for idx in range(current_chunk_count + int(get_env('DELETE_BUFFER')))]
+    for n in range(0, len(candidate_ids), 1000):
+        index.delete(ids=candidate_ids[n : n + 1000])
+
+
+def add_documents_in_batches(vector_store: Chroma, documents: list[Document]):
+    for n in tqdm(
+        range(0, len(documents), int(get_env('BATCH_SIZE'))),
+        desc='Indexando lotes',
+        unit='embedding',
+        leave=True,
+    ):
+        vector_store.add_documents(documents=documents[n : n + int(get_env('BATCH_SIZE'))])
+
+
+def get_device_kwargs() -> dict:
+    return {'device': 'cuda'} if torch.cuda.is_available() else {'device': 'cpu'}
 
 
 def add_headers_context(doc: Document) -> Document:
@@ -53,7 +78,7 @@ def generate_langchain_documents(file: Path) -> list[Document]:
         # Adicionar disciplina no metadata
         doc = add_headers_context(doc)
         doc.metadata['source'] = file.name
-        doc.id = str(uuid5(NAMESPACE_URL, f'{file.name}:{idx}'))
+        doc.id = build_chunk_id(file, idx)
         documents.append(doc)
         idx += 1
 
@@ -63,6 +88,7 @@ def generate_langchain_documents(file: Path) -> list[Document]:
 def main():
     embeddings = HuggingFaceEmbeddings(
         model_name=get_env('HF_EMBEDDING_MODEL'),
+        model_kwargs=get_device_kwargs(),
         encode_kwargs={'normalize_embeddings': True},
     )
 
@@ -75,15 +101,26 @@ def main():
     # vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
     vector_store = Chroma(
-        collection_name=get_env('HF_MODEL'),
+        collection_name=get_env('INDEX_NAME'),
         embedding_function=embeddings,
         persist_directory='./chroma_eduia_rag',
     )
 
     files = get_paths(CONVERTED_PATH)
+    total_documents = 0
+
     for file in tqdm(files, desc='Gerando embeddings', unit='arquivo'):
         documents = generate_langchain_documents(file)
+        if not documents:
+            print(f'Nenhum chunk válido gerado para "{file.name}", pulando...')
+            continue
+
+        # delete_old_chunks(index, file, len(documents))
+        add_documents_in_batches(vector_store, documents)
         vector_store.add_documents(documents=documents)
+        total_documents += len(documents)
+
+    print(f'{total_documents} documento(s) adicionado(s) com sucesso em {len(files)} arquivo(s)')
 
 
 if __name__ == '__main__':
