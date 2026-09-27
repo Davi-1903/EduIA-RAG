@@ -1,31 +1,20 @@
-import os
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
 import torch
 from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
-from pinecone import Pinecone
 from tqdm import tqdm
 
 from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
 from converter import get_paths
+from utils import get_env, get_vector_store
 
 
 load_dotenv()
-
-
-def get_env(key: str, default: str | None = None) -> str:
-    value = os.getenv(key)
-    if value is not None:
-        return value
-    if default is not None:
-        return default
-    raise RuntimeError(f'A variável de ambiente "{key}" não foi estabelecida ou está vazia')
 
 
 def build_chunk_id(file: Path, idx: int) -> str:
@@ -48,7 +37,7 @@ def add_documents_in_batches(vector_store: PineconeVectorStore, documents: list[
         vector_store.add_documents(documents=documents[n : n + int(get_env('BATCH_SIZE'))])
 
 
-def get_device_kwargs() -> dict:
+def get_device_kwargs() -> dict[str, str]:
     return {'device': 'cuda'} if torch.cuda.is_available() else {'device': 'cpu'}
 
 
@@ -87,19 +76,7 @@ def generate_langchain_documents(file: Path) -> list[Document]:
 
 
 def main():
-    embeddings = HuggingFaceEmbeddings(
-        model_name=get_env('HF_EMBEDDING_MODEL'),
-        model_kwargs=get_device_kwargs(),
-        encode_kwargs={'normalize_embeddings': True},
-    )
-
-    try:
-        pc = Pinecone(api_key=get_env('PINECONE_API_KEY'))
-        index = pc.Index(get_env('INDEX_NAME'))
-    except Exception as e:
-        raise RuntimeError(f'Não foi possível se conectar ao pinecone: {e}') from e
-
-    vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+    index, vector_store = get_vector_store()
 
     files = get_paths(CONVERTED_PATH)
     total_documents = 0

@@ -92,9 +92,10 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
         		"question": "Qual problema o docker soluciona?",
         		"answer": "O docker foi criado para ..."
         	}
-        	// Outras perguntas e respostas seguindo o mesmo formato
         ]
         ```
+
+        > Outras perguntas e respostas seguindo o mesmo formato
 
     2. **Execute o script [`record.py`](./record.py)**
 

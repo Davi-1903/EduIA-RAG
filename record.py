@@ -5,15 +5,13 @@ from langchain.agents import create_agent
 from langchain.tools import BaseTool, tool
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import PromptTemplate
-from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import ChatHuggingFace
 from langchain_pinecone import PineconeVectorStore
 from langgraph.graph.state import CompiledStateGraph
-from pinecone import Pinecone
 from tabulate import tabulate
 from tqdm import tqdm
 
-from embeddings import get_env
+from utils import get_llm, get_vector_store
 
 
 load_dotenv()
@@ -113,29 +111,17 @@ def compare_answers(llm: ChatHuggingFace):
 
 
 def main():
-    SYSTEM_PROMPT = 'Você é um assistente que responde perguntas usando os materiais de estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar'
+    SYSTEM_PROMPT = """Você é um assistente que responde perguntas usando os materiais de
+    estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de
+    responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar"""
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name=get_env('HF_EMBEDDING_MODEL'),
-        encode_kwargs={'normalize_embeddings': True},
+    _, vector_store = get_vector_store()
+    llm = get_llm()
+    agent = create_agent(
+        model=llm,
+        tools=[build_search_tool(vector_store)],
+        system_prompt=SYSTEM_PROMPT,
     )
-
-    try:
-        pc = Pinecone(api_key=get_env('PINECONE_API_KEY'))
-        index = pc.Index(get_env('INDEX_NAME'))
-    except Exception as e:
-        raise RuntimeError(f'Não foi possível se conectar ao pinecone: {e}') from e
-
-    vector_store = PineconeVectorStore(embedding=embeddings, index=index)
-    llm_endpoint = HuggingFaceEndpoint(
-        model=get_env('HF_MODEL'),
-        max_new_tokens=int(get_env('MAX_TOKENS')),
-        temperature=0.1,
-        top_p=0.9,
-        provider='auto',
-    )
-    llm = ChatHuggingFace(llm=llm_endpoint)
-    agent = create_agent(model=llm, tools=[build_search_tool(vector_store)], system_prompt=SYSTEM_PROMPT)
 
     answer_questions(agent)
     compare_answers(llm)
