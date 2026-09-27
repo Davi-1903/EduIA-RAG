@@ -1,9 +1,14 @@
 from pathlib import Path
 
+from loguru import logger
 from markitdown import MarkItDown, MarkItDownException
 from tqdm import tqdm
 
 from pipeline.constants import CONVERTED_PATH, RAW_PATH
+from pipeline.utils import setup_logger
+
+
+setup_logger(__name__, 'logs/conversions.log')
 
 
 def get_paths(path: Path) -> list[Path]:
@@ -31,11 +36,18 @@ def save_file(file: Path, content: str):
 
 
 def main():
+    logger.debug('Iniciando a conversão dos materiais')
+
     raw_files = get_paths(RAW_PATH)
     for file in tqdm(raw_files, desc='Convertendo arquivos', unit='arquivo'):
         content = convert_to_markdown(file)
         if content is not None:
             save_file(CONVERTED_PATH / f'{file.name}.md', content)
+            logger.info(f'"{file.name}" convertido')
+        else:
+            logger.error(f'"{file.name}" não foi convertido')
+
+    logger.success(f'Finalizado a conversão de {len(raw_files)} materiais')
 
 
 if __name__ == '__main__':

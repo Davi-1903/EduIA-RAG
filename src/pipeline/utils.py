@@ -1,9 +1,26 @@
 from os import getenv
+from pathlib import Path
 
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
+from loguru import logger
 from pinecone import Pinecone
+
+
+try:
+    logger.remove(0)
+except ValueError:
+    pass
+
+
+def setup_logger(name: str, filepath: str | Path, rotation: str = '1 MB'):
+    logger.add(
+        filepath,
+        format='{level:<8} | {time:DD/MM/YYYY HH:mm} | {name} - {message}',
+        rotation=rotation,
+        filter=lambda record, _name=name: record['name'] == _name,
+    )
 
 
 def get_env(key: str, default: str | None = None) -> str:

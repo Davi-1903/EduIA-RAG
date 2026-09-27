@@ -7,14 +7,16 @@ from langchain_core.documents import Document
 from langchain_pinecone import PineconeVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
+from loguru import logger
 from tqdm import tqdm
 
 from pipeline.constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
 from pipeline.ingestion.converter import get_paths
-from pipeline.utils import get_env, get_vector_store
+from pipeline.utils import get_env, get_vector_store, setup_logger
 
 
 load_dotenv()
+setup_logger(__name__, 'logs/embeddings.log')
 
 
 def build_chunk_id(file: Path, idx: int) -> str:
@@ -25,6 +27,7 @@ def delete_old_chunks(index, file: Path, current_chunk_count: int):
     candidate_ids = [build_chunk_id(file, idx) for idx in range(current_chunk_count + int(get_env('DELETE_BUFFER')))]
     for n in range(0, len(candidate_ids), 1000):
         index.delete(ids=candidate_ids[n : n + 1000])
+    logger.debug('Chunks antigos deletados')
 
 
 def add_documents_in_batches(vector_store: PineconeVectorStore, documents: list[Document]):
@@ -76,6 +79,8 @@ def generate_langchain_documents(file: Path) -> list[Document]:
 
 
 def main():
+    logger.debug('Iniciando a criação dos embeddings')
+
     index, vector_store = get_vector_store()
 
     files = get_paths(CONVERTED_PATH)
@@ -84,14 +89,15 @@ def main():
     for file in tqdm(files, desc='Gerando embeddings', unit='arquivo'):
         documents = generate_langchain_documents(file)
         if not documents:
-            print(f'Nenhum chunk válido gerado para "{file.name}", pulando...')
+            logger.info(f'Nenhum chunk válido gerado para "{file.name}", pulando...')
             continue
 
         delete_old_chunks(index, file, len(documents))
         add_documents_in_batches(vector_store, documents)
         total_documents += len(documents)
+        logger.debug(f'{len(documents)} embeddings gerados para o arquivo "{file.name}"')
 
-    print(f'{total_documents} documento(s) adicionado(s) com sucesso em {len(files)} arquivo(s)')
+    logger.success(f'{total_documents} documento(s) adicionado(s) com sucesso em {len(files)} arquivo(s)')
 
 
 if __name__ == '__main__':

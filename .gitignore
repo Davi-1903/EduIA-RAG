@@ -9,7 +9,11 @@ wheels/
 # Virtual environments and environments variables
 .env*
 !.env.example
-.venv
+.venv/
+venv/
+.env/
+env/
+ENV/
 
 # Documents
 docs/**
@@ -24,3 +28,6 @@ docs/**
 !.vscode/extensions.json
 !.vscode/bookmarks.json
 .idea/
+
+# Logs
+logs/

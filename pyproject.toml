@@ -9,6 +9,7 @@ dependencies = [
     "langchain-huggingface>=1.2.2",
     "langchain-pinecone>=0.2.13",
     "langchain-text-splitters>=1.1.2",
+    "loguru>=0.7.3",
     "markitdown[docx,pdf,pptx]>=0.1.8",
     "python-dotenv>=1.2.3",
     "sentence-transformers>=6.1.0",

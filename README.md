@@ -183,7 +183,7 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 - [x] Adicionar testes com IA para validar qualidade dos embeddings gerados
 - [ ] Adicionar testes variando os mateiriais criados, questões, quizzes, flashcards
 - [ ] Explorar a estratégia Parent-Child
-- [ ] Adicionar logs
+- [x] Adicionar logs
 
 ## Licença
 

@@ -8,14 +8,16 @@ from langchain_core.prompts import PromptTemplate
 from langchain_huggingface import ChatHuggingFace
 from langchain_pinecone import PineconeVectorStore
 from langgraph.graph.state import CompiledStateGraph
+from loguru import logger
 from tabulate import tabulate
 from tqdm import tqdm
 
 from pipeline.constants import ANSWERS_PATH, QUESTIONS_PATH
-from pipeline.utils import get_llm, get_vector_store
+from pipeline.utils import get_llm, get_vector_store, setup_logger
 
 
 load_dotenv()
+setup_logger(__name__, 'logs/record.log')
 
 
 def get_questions() -> list[str]:
@@ -64,9 +66,11 @@ def save_answer(question: str, answer: str):
 
 
 def answer_questions(agent: CompiledStateGraph):
-    for question in tqdm(get_questions(), desc='Gerando respostas', unit='pergunta'):
+    questions = get_questions()
+    for question in tqdm(questions, desc='Gerando respostas', unit='pergunta'):
         answer = generate_answer(question, agent)
         save_answer(question, answer)
+    logger.debug(f'{len(questions)} questão(ões) respondida(s)')
 
 
 def compare_answers(llm: ChatHuggingFace):
@@ -110,11 +114,16 @@ def compare_answers(llm: ChatHuggingFace):
     print(tabulate(data, headers=['Id da pergunta', 'Avaliação'], tablefmt='pretty'))
     print(f'Média: {media}')
 
+    logger.info('\n' + tabulate(data, headers=['Id da pergunta', 'Avaliação'], tablefmt='pretty'))
+    logger.info(f'Média: {media}')
+
 
 def main():
     SYSTEM_PROMPT = """Você é um assistente que responde perguntas usando os materiais de
     estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de
     responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar"""
+
+    logger.debug('Iniciando a analise do RAG')
 
     _, vector_store = get_vector_store()
     llm = get_llm()
@@ -126,6 +135,8 @@ def main():
 
     answer_questions(agent)
     compare_answers(llm)
+
+    logger.success('Finalização da analise do RAG')
 
 
 if __name__ == '__main__':
