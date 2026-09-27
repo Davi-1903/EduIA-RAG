@@ -9,9 +9,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters.markdown import MarkdownHeaderTextSplitter
 from tqdm import tqdm
 
-from constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
-from converter import get_paths
-from utils import get_env, get_vector_store
+from pipeline.constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
+from pipeline.ingestion.converter import get_paths
+from pipeline.utils import get_env, get_vector_store
 
 
 load_dotenv()
@@ -89,7 +89,6 @@ def main():
 
         delete_old_chunks(index, file, len(documents))
         add_documents_in_batches(vector_store, documents)
-        vector_store.add_documents(documents=documents)
         total_documents += len(documents)
 
     print(f'{total_documents} documento(s) adicionado(s) com sucesso em {len(files)} arquivo(s)')

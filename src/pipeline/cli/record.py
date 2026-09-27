@@ -11,14 +11,15 @@ from langgraph.graph.state import CompiledStateGraph
 from tabulate import tabulate
 from tqdm import tqdm
 
-from utils import get_llm, get_vector_store
+from pipeline.constants import ANSWERS_PATH, QUESTIONS_PATH
+from pipeline.utils import get_llm, get_vector_store
 
 
 load_dotenv()
 
 
 def get_questions() -> list[str]:
-    with open('./questions.json', encoding='utf-8') as f:
+    with open(QUESTIONS_PATH, encoding='utf-8') as f:
         questions = json.load(f)
         return [question['question'] for question in questions]
 
@@ -54,11 +55,11 @@ def generate_answer(question: str, agent: CompiledStateGraph) -> str:
 
 
 def save_answer(question: str, answer: str):
-    with open('./answers.json', encoding='utf-8') as f:
+    with open(ANSWERS_PATH, encoding='utf-8') as f:
         answers: list[dict] = json.load(f)
         answers.append({'id': len(answers) + 1, 'question': question, 'answer': answer})
 
-    with open('./answers.json', 'w', encoding='utf-8') as f:
+    with open(ANSWERS_PATH, 'w', encoding='utf-8') as f:
         json.dump(answers, f, indent=2)
 
 
@@ -70,9 +71,9 @@ def answer_questions(agent: CompiledStateGraph):
 
 def compare_answers(llm: ChatHuggingFace):
     prompt = PromptTemplate(
-        template="""Realize uma avaliação entre a primeira resposta (resposta obtida) em relação à segunda resposta (resposta esperada), fornecendo uma nota entre 0 e 5
+        template="""Realize uma avaliação entre a primeira resposta (resposta obtida) em relação à segunda resposta (resposta esperada), fornecendo uma nota entre 0 e 10
         Formato da resposta:
-            - A resposta deve conter apenas a nota (float);
+            - A resposta deve conter apenas a nota (inteiro);
             - Não explique o raciocínio;
         Resposta obtida:
             {resposta_obtida}
@@ -82,10 +83,10 @@ def compare_answers(llm: ChatHuggingFace):
         input_variables=['resposta_esperada', 'resposta_obtida'],
     )
 
-    with open('./questions.json', encoding='utf-8') as f:
+    with open(QUESTIONS_PATH, encoding='utf-8') as f:
         correct_answers = json.load(f)
 
-    with open('./answers.json', encoding='utf-8') as f:
+    with open(ANSWERS_PATH, encoding='utf-8') as f:
         ai_responses = json.load(f)
         ai_responses = [answer['answer'] for answer in ai_responses]
 
@@ -104,7 +105,7 @@ def compare_answers(llm: ChatHuggingFace):
         )
         results.append(response.content)
 
-    data = [[str(idx), result] for idx, result in enumerate(results, 1)]
+    data = [[str(idx), f'{result}/10'] for idx, result in enumerate(results, 1)]
     media = sum(float(result) for result in results) / len(results)
     print(tabulate(data, headers=['Id da pergunta', 'Avaliação'], tablefmt='pretty'))
     print(f'Média: {media}')

@@ -3,7 +3,7 @@ from pathlib import Path
 from markitdown import MarkItDown, MarkItDownException
 from tqdm import tqdm
 
-from constants import CONVERTED_PATH, RAW_PATH
+from pipeline.constants import CONVERTED_PATH, RAW_PATH
 
 
 def get_paths(path: Path) -> list[Path]:

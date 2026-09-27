@@ -50,6 +50,8 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     MAX_TOKENS=3000
     INDEX_NAME="eduia-rag"
     MIN_CHUNKS_LENGTH="50"
+    DELETE_BUFFER="50"
+    BATCH_SIZE="100"
     ```
 
 4. **Adicione os documentos a serem convertidos**
@@ -99,7 +101,7 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
     2. **Execute o script [`record.py`](./record.py)**
 
-        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./questions.json)) as armazena em [`answers.json`](./answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas e gerará uma nota de 0 a 5
+        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./questions.json)) as armazenar em [`answers.json`](./answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas, gerando uma nota de 0 a 5 para cada uma delas
 
         ```bash
         # Com pip
