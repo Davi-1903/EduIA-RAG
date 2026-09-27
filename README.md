@@ -82,7 +82,31 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 7. **Testar RAG**
 
-    Em breve...
+    Para avaliar a qualidade das respostas é necessário criar possíveis perguntas e as respostas esperadas
+    1. **Adicione as perguntas e respostas no arquivo [`questions.json`](./questions.json)**
+
+        ```json
+        [
+        	{
+        		"id": 1,
+        		"question": "Qual problema o docker soluciona?",
+        		"answer": "O docker foi criado para ..."
+        	}
+        	// Outras perguntas e respostas seguindo o mesmo formato
+        ]
+        ```
+
+    2. **Execute o script [`record.py`](./record.py)**
+
+        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./questions.json)) as armazena em [`answers.json`](./answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas e gerará uma nota de 0 a 5
+
+        ```bash
+        # Com pip
+        python record.py
+
+        # Com uv
+        uv run record.py
+        ```
 
 ## Estrutura dos documentos
 
@@ -123,7 +147,8 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 - [ ] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
 - [ ] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
 - [ ] Adicionar disciplina no metadata dos _embeddings_ criados
-- [ ] Adicionar testes com IA para validar qualidade dos embeddings gerados
+- [x] Adicionar testes com IA para validar qualidade dos embeddings gerados
+- [ ] Adicionar testes variando os mateiriais criados, questões, quizzes, flashcards
 - [ ] Explorar a estratégia Parent-Child
 - [ ] Adicionar logs
 
