@@ -5,6 +5,7 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 ## Sumário
 
 - [Como executar](#como-executar)
+- [Estrutura do projeto](#estrutura-do-projeto)
 - [Estrutura dos documentos](#estrutura-dos-documentos)
 - [Observações](#observações)
 - [Disciplinas do curso de Informática para Internet](#disciplinas-do-curso-de-informática-para-internet)
@@ -30,10 +31,14 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     python -m venv .venv
     source .venv/bin/activate  # No Windows: .venv\Scripts\activate
     pip install -r requirements.txt
+    pip install -e .
 
     # Com uv
     uv sync
     ```
+
+    > [!NOTE]
+    > O `pip install -e .` (ou o `uv sync`, que já cuida disso automaticamente) instala o próprio projeto em modo editável, disponibilizando os comandos `convert`, `embed` e `record` usados mais abaixo.
 
 3. **Crie as variáveis de ambiente**
 
@@ -60,32 +65,32 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 5. **Converta os documentos**
 
-    Execute o script [`converter.py`](./converter.py) para transformar os documentos de [`docs/raw/`](./docs/raw/) em Markdown. Os arquivos convertidos serão criados em [`docs/converted/`](./docs/converted/).
+    Execute o script [`converter.py`](./src/pipeline/ingestion/converter.py) para transformar os documentos de [`docs/raw/`](./docs/raw/) em Markdown. Os arquivos convertidos serão criados em [`docs/converted/`](./docs/converted/).
 
     ```bash
     # Com pip
-    python converter.py
+    convert
 
     # Com uv
-    uv run converter.py
+    uv run convert
     ```
 
 6. **Gere os embeddings**
 
-    Execute o script [`embeddings.py`](./embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
+    Execute o script [`embeddings.py`](./src/pipeline/ingestion/embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
 
     ```bash
     # Com pip
-    python embeddings.py
+    embed
 
     # Com uv
-    uv run embeddings.py
+    uv run embed
     ```
 
 7. **Testar RAG**
 
     Para avaliar a qualidade das respostas é necessário criar possíveis perguntas e as respostas esperadas
-    1. **Adicione as perguntas e respostas no arquivo [`questions.json`](./questions.json)**
+    1. **Adicione as perguntas e respostas no arquivo [`questions.json`](./data/questions.json)**
 
         ```json
         [
@@ -99,17 +104,42 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
         > Outras perguntas e respostas seguindo o mesmo formato
 
-    2. **Execute o script [`record.py`](./record.py)**
+    2. **Execute o script [`record.py`](./src/pipeline/cli/record.py)**
 
-        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./questions.json)) as armazenar em [`answers.json`](./answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas, gerando uma nota de 0 a 5 para cada uma delas
+        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./data/questions.json)) as armazenar em [`answers.json`](./data/answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas, gerando uma nota de 0 a 5 para cada uma delas
 
         ```bash
         # Com pip
-        python record.py
+        record
 
         # Com uv
-        uv run record.py
+        uv run record
         ```
+
+## Estrutura do projeto
+
+```text
+.
+├───data/                  # Dados de entrada/saída, editados manualmente
+│       answers.json
+│       questions.json
+│
+├───docs/
+│   ├───converted/         # Arquivos convertidos em Markdown
+│   └───raw/               # Arquivos brutos
+│
+└───src/
+    └───pipeline/
+        │   constants.py
+        │   utils.py
+        │
+        ├───cli/
+        │       record.py
+        │
+        └───ingestion/
+                converter.py
+                embeddings.py
+```
 
 ## Estrutura dos documentos
 
