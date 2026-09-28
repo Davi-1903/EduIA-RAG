@@ -6,7 +6,6 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 - [Como executar](#como-executar)
 - [Estrutura do projeto](#estrutura-do-projeto)
-- [Estrutura dos documentos](#estrutura-dos-documentos)
 - [Observações](#observações)
 - [Disciplinas do curso de Informática para Internet](#disciplinas-do-curso-de-informática-para-internet)
 - [Melhorias futuras](#melhorias-futuras)
@@ -37,7 +36,6 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     uv sync
     ```
 
-    > [!NOTE]
     > O `pip install -e .` (ou o `uv sync`, que já cuida disso automaticamente) instala o próprio projeto em modo editável, disponibilizando os comandos `convert`, `embed` e `record` usados mais abaixo.
 
 3. **Crie as variáveis de ambiente**
@@ -54,9 +52,9 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     HF_MODEL="<MODELO-DE-IA>"
     MAX_TOKENS=3000
     INDEX_NAME="eduia-rag"
-    MIN_CHUNKS_LENGTH="50"
-    DELETE_BUFFER="50"
-    BATCH_SIZE="100"
+    MIN_CHUNKS_LENGTH=50
+    DELETE_BUFFER=50
+    BATCH_SIZE=100
     ```
 
 4. **Adicione os documentos a serem convertidos**
@@ -77,14 +75,14 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 6. **Gere os embeddings**
 
-    Execute o script [`embeddings.py`](./src/pipeline/ingestion/embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone.
+    Execute o script [`embeddings.py`](./src/pipeline/ingestion/embeddings.py) para criar os _embeddings_ e adicioná-los ao banco vetorial do Pinecone. Adicione a flag `--discipline` ou `-d` e especifique a matéria dos materiais
 
     ```bash
     # Com pip
-    embed
+    embed -d "<disciplina>"
 
     # Com uv
-    uv run embed
+    uv run embed -d "<disciplina>"
     ```
 
 7. **Testar RAG**
@@ -106,23 +104,23 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
     2. **Execute o script [`record.py`](./src/pipeline/cli/record.py)**
 
-        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./data/questions.json)) as armazenar em [`answers.json`](./data/answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas, gerando uma nota de 0 a 5 para cada uma delas
+        O script `record.py` usa o **RAG** para responder as perguntas ([`questions.json`](./data/questions.json)) as armazenar em [`answers.json`](./data/answers.json), após isso o modelo comparará a resposta gerada pela **IA** com as respostas corretas, gerando uma nota de 0 a 10 para cada uma delas. Especifique de qual matéria são as perguntas
 
         ```bash
         # Com pip
-        record
+        record -d "<disciplina>"
 
         # Com uv
-        uv run record
+        uv run record -d "<disciplina>"
         ```
 
 ## Estrutura do projeto
 
 ```text
-.
-├───data/                  # Dados de entrada/saída, editados manualmente
+EduIA-RAG
+├───data/
 │       answers.json
-│       questions.json
+│       questions.json     # Perguntas e respostas (editado manualmente)
 │
 ├───docs/
 │   ├───converted/         # Arquivos convertidos em Markdown
@@ -139,14 +137,6 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
         └───ingestion/
                 converter.py
                 embeddings.py
-```
-
-## Estrutura dos documentos
-
-```text
-docs/
-├───converted/  # Arquivos convertidos em Markdown
-└───raw/        # Arquivos brutos
 ```
 
 ## Observações
@@ -179,7 +169,7 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 - [ ] Usar um modelo da OpenAI para descrever as imagens e tabelas
 - [ ] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
 - [ ] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
-- [ ] Adicionar disciplina no metadata dos _embeddings_ criados
+- [x] Adicionar disciplina no metadata dos _embeddings_ criados
 - [x] Adicionar testes com IA para validar qualidade dos embeddings gerados
 - [ ] Adicionar testes variando os mateiriais criados, questões, quizzes, flashcards
 - [ ] Explorar a estratégia Parent-Child

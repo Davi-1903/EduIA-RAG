@@ -35,8 +35,8 @@ lines-after-imports = 2
 
 [project.scripts]
 convert = "pipeline.ingestion.converter:main"
-embed = "pipeline.ingestion.embeddings:main"
-record = "pipeline.cli.record:main"
+embed = "pipeline.ingestion.embeddings:app"
+record = "pipeline.cli.record:app"
 
 [build-system]
 requires = ["hatchling"]

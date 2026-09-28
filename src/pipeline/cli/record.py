@@ -1,5 +1,7 @@
 import json
+from typing import Annotated
 
+import typer
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.tools import BaseTool, tool
@@ -13,11 +15,12 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 from pipeline.constants import ANSWERS_PATH, QUESTIONS_PATH
-from pipeline.utils import get_llm, get_vector_store, setup_logger
+from pipeline.utils import Discipline, get_llm, get_vector_store, setup_logger
 
 
 load_dotenv()
 setup_logger(__name__, 'logs/record.log')
+app = typer.Typer(name='EduIA-RAG')
 
 
 def get_questions() -> list[str]:
@@ -26,7 +29,7 @@ def get_questions() -> list[str]:
         return [question['question'] for question in questions]
 
 
-def build_search_tool(vector_store: PineconeVectorStore) -> BaseTool:
+def build_search_tool(vector_store: PineconeVectorStore, discipline: Discipline) -> BaseTool:
     @tool(parse_docstring=True)
     def search_documentation(query: str) -> str:
         """Busca trechos relevantes nos materiais de estudo indexados para responder
@@ -39,8 +42,11 @@ def build_search_tool(vector_store: PineconeVectorStore) -> BaseTool:
         Returns:
             String com contendo o conteúdo dos materiais encontrados e a fonte
         """
-        # Filtrar por disciplina
-        result = vector_store.similarity_search(query, k=10)
+        result = vector_store.similarity_search(
+            query,
+            filter={'discipline': discipline.value},
+            k=10,
+        )
         if not result:
             return 'Nenhum resultado encontrado nos documentos indexados.'
 
@@ -118,7 +124,13 @@ def compare_answers(llm: ChatHuggingFace):
     logger.info(f'Média: {media}')
 
 
-def main():
+@app.command()
+def main(
+    discipline: Annotated[
+        Discipline,
+        typer.Option('--discipline', '-d', help='Matéria dos materiais adicionados'),
+    ],
+):
     SYSTEM_PROMPT = """Você é um assistente que responde perguntas usando os materiais de
     estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de
     responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar"""
@@ -129,7 +141,7 @@ def main():
     llm = get_llm()
     agent = create_agent(
         model=llm,
-        tools=[build_search_tool(vector_store)],
+        tools=[build_search_tool(vector_store, discipline)],
         system_prompt=SYSTEM_PROMPT,
     )
 
@@ -140,4 +152,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    app()

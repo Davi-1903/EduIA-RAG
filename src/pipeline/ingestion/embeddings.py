@@ -1,7 +1,9 @@
 from pathlib import Path
+from typing import Annotated
 from uuid import NAMESPACE_URL, uuid5
 
 import torch
+import typer
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_pinecone import PineconeVectorStore
@@ -12,11 +14,12 @@ from tqdm import tqdm
 
 from pipeline.constants import CONVERTED_PATH, HEADERS_TO_SPLIT_ON
 from pipeline.ingestion.converter import get_paths
-from pipeline.utils import get_env, get_vector_store, setup_logger
+from pipeline.utils import Discipline, get_env, get_vector_store, setup_logger
 
 
 load_dotenv()
 setup_logger(__name__, 'logs/embeddings.log')
+app = typer.Typer(name='EduIA-RAG')
 
 
 def build_chunk_id(file: Path, idx: int) -> str:
@@ -51,7 +54,7 @@ def add_headers_context(doc: Document) -> Document:
     return doc
 
 
-def generate_langchain_documents(file: Path) -> list[Document]:
+def generate_langchain_documents(file: Path, discipline: Discipline) -> list[Document]:
     header_splitter = MarkdownHeaderTextSplitter(HEADERS_TO_SPLIT_ON, strip_headers=True)
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=800,
@@ -68,9 +71,9 @@ def generate_langchain_documents(file: Path) -> list[Document]:
         if len(doc.page_content.strip()) < int(get_env('MIN_CHUNKS_LENGTH')):
             continue
 
-        # Adicionar disciplina no metadata
         doc = add_headers_context(doc)
         doc.metadata['source'] = file.name
+        doc.metadata['discipline'] = discipline.value
         doc.id = build_chunk_id(file, idx)
         documents.append(doc)
         idx += 1
@@ -78,16 +81,21 @@ def generate_langchain_documents(file: Path) -> list[Document]:
     return documents
 
 
-def main():
+@app.command()
+def main(
+    discipline: Annotated[
+        Discipline,
+        typer.Option('--discipline', '-d', help='Matéria dos materiais adicionados'),
+    ],
+):
     logger.debug('Iniciando a criação dos embeddings')
 
     index, vector_store = get_vector_store()
-
     files = get_paths(CONVERTED_PATH)
     total_documents = 0
 
     for file in tqdm(files, desc='Gerando embeddings', unit='arquivo'):
-        documents = generate_langchain_documents(file)
+        documents = generate_langchain_documents(file, discipline)
         if not documents:
             logger.info(f'Nenhum chunk válido gerado para "{file.name}", pulando...')
             continue
@@ -101,4 +109,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    app()

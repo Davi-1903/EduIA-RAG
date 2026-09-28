@@ -1,3 +1,4 @@
+from enum import Enum
 from os import getenv
 from pathlib import Path
 
@@ -12,6 +13,24 @@ try:
     logger.remove(0)
 except ValueError:
     pass
+
+
+class Discipline(str, Enum):
+    filosofia_ciencia_e_tecnologia = 'Filosofia, Ciência e Tecnologia'
+    sociologia_do_trabalho = 'Sociologia do Trabalho'
+    qualidade_de_vida_e_trabalho = 'Qualidade de Vida e Trabalho'
+    gestao_organizacional = 'Gestão Organizacional'
+    fundamentos_de_logica_e_algoritmo = 'Fundamentos de Lógica e Algoritmo'
+    analise_e_projeto_orientados_a_objetos = 'Análise e Projeto Orientados a Objetos'
+    projeto_de_desenvolvimento_de_sistemas_para_internet = 'Projeto de Desenvolvimento de Sistemas para Internet'
+    principios_de_design_e_projeto_grafico = 'Princípios de Design e Projeto Gráfico'
+    design_web_e_arquitetura_da_informacao = 'Design Web e Arquitetura da Informação'
+    programacao_estruturada_e_orientada_a_objetos = 'Programação Estruturada e Orientada a Objetos'
+    banco_de_dados = 'Banco de Dados'
+    programacao_de_sistemas_para_internet = 'Programação de Sistemas para Internet'
+    instalacao_e_configuracao_de_servidores = 'Instalação e Configuração de Servidores'
+    projeto_de_interface_do_usuario = 'Projeto de Interface do Usuário'
+    programacao_orientada_a_servicos = 'Programação Orientada a Serviços'
 
 
 def setup_logger(name: str, filepath: str | Path, rotation: str = '1 MB'):
