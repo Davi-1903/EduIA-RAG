@@ -22,7 +22,7 @@ def convert_to_markdown(path: Path) -> str | None:
     md = MarkItDown(
         enable_plugins=True,
         llm_client=client,
-        llm_model='Qwen/Qwen3-VL-30B-A3B-Instruct',
+        llm_model=get_env('HF_VISION_MODEL'),
         llm_prompt='Extract all the content and organize it using Markdown headings. Describe the images and the content of the tables.',
     )
 

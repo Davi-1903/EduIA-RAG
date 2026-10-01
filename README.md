@@ -49,6 +49,7 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
     # ===========================< IA >===========================
     HF_EMBEDDING_MODEL="<MODELO-DE-EMBEDDING>"
+    HF_VISION_MODEL="<MODELO-PARA-OCR>"
     HF_MODEL="<MODELO-DE-IA>"
     MAX_TOKENS=3000
     INDEX_NAME="eduia-rag"
