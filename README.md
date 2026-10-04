@@ -60,7 +60,10 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
 
 4. **Adicione os documentos a serem convertidos**
 
-    Coloque os arquivos no diretório [`docs/raw/`](./docs/raw/). Veja a [estrutura dos documentos](#estrutura-dos-documentos).
+    Adicione os arquivos no diretório [`docs/raw/`](./docs/raw/), os documentos devem ser adicionados por disciplina, ou seja, não adicione materiais misturados, pois prejudica a busca dos trechos.
+
+    - [Estrutura dos documentos](#estrutura-do-projeto)
+    - [Disciplinas disponíveis](#disciplinas-do-curso-de-informática-para-internet)
 
 5. **Converta os documentos**
 
