@@ -131,9 +131,11 @@ def main(
         typer.Option('--discipline', '-d', help='Matéria dos materiais adicionados'),
     ],
 ):
-    SYSTEM_PROMPT = """Você é um assistente que responde perguntas usando os materiais de
-    estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de
-    responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar"""
+    SYSTEM_PROMPT = (
+        'Você é um assistente que responde perguntas usando os materiais de'
+        'estudo indexados. Use a ferramenta search_documentation para buscar contexto antes de'
+        'responder. Se a resposta não estiver nos documentos, diga isso claramente em vez de inventar'
+    )
 
     logger.debug('Iniciando a analise do RAG')
 

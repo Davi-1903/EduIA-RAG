@@ -1,18 +1,13 @@
 from pathlib import Path
 
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import VlmPipelineOptions
-from docling.datamodel.pipeline_options_vlm_model import ApiVlmOptions, ResponseFormat
-from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.document_converter import DocumentConverter
 from docling.exceptions import ConversionError
-from docling.pipeline.vlm_pipeline import VlmPipeline
 from dotenv import load_dotenv
 from loguru import logger
-from pydantic import AnyUrl
 from tqdm import tqdm
 
 from pipeline.constants import CONVERTED_PATH, RAW_PATH
-from pipeline.utils import get_env, setup_logger
+from pipeline.utils import get_converter, setup_logger
 
 
 load_dotenv()
@@ -42,32 +37,7 @@ def save_file(file: Path, content: str):
 
 
 def main():
-    converter = DocumentConverter(
-        format_options={
-            InputFormat.PDF: PdfFormatOption(
-                pipeline_cls=VlmPipeline,
-                pipeline_options=VlmPipelineOptions(
-                    enable_remote_services=True,
-                    vlm_options=ApiVlmOptions(
-                        url=AnyUrl('https://router.huggingface.co/v1/chat/completions'),
-                        headers={'Authorization': f'Bearer {get_env("HUGGINGFACEHUB_API_TOKEN")}'},
-                        params={
-                            'model': get_env('HF_VISION_MODEL'),
-                            'max_tokens': 4096,
-                            'temperature': 0,
-                        },
-                        prompt=(
-                            'Transcreva fielmente todo o texto da página em português, '
-                            'com títulos em Markdown. Descreva imagens e tabelas entre colchetes.'
-                        ),
-                        timeout=120,
-                        scale=2.0,
-                        response_format=ResponseFormat.MARKDOWN,
-                    ),
-                ),
-            )
-        }
-    )
+    converter = get_converter()
 
     logger.debug('Iniciando a conversão dos materiais')
 
