@@ -170,9 +170,9 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 
 ## Melhorias futuras
 
-- [ ] Usar um modelo da OpenAI para descrever as imagens e tabelas
-- [ ] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
-- [ ] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
+- [x] Usar um modelo para descrever as imagens e tabelas
+- [x] Especificar o uso de títulos em Markdown e preservar a estrutura dos documentos durante a conversão
+- [x] Diversificar estratégia de chunk splitting para diferentes tipos de materiais (listas, slides, textos, etc...)
 - [x] Adicionar disciplina no metadata dos _embeddings_ criados
 - [x] Adicionar testes com IA para validar qualidade dos embeddings gerados
 - [ ] Adicionar testes variando os mateiriais criados, questões, quizzes, flashcards
