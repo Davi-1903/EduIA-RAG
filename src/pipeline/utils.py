@@ -2,20 +2,15 @@ from enum import Enum
 from os import getenv
 from pathlib import Path
 
-from docling.datamodel.base_models import InputFormat
-from docling.datamodel.pipeline_options import ConvertPipelineOptions, PictureDescriptionApiOptions, VlmPipelineOptions
-from docling.datamodel.pipeline_options_vlm_model import ApiVlmOptions, ResponseFormat
-from docling.document_converter import DocumentConverter, PdfFormatOption, PowerpointFormatOption, WordFormatOption
-from docling.pipeline.vlm_pipeline import VlmPipeline
-from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from loguru import logger
 from pinecone import Pinecone
 
-from pipeline.constants import HF_URL
 
-
+load_dotenv(override=True)
 try:
     logger.remove(0)
 except ValueError:
@@ -58,52 +53,6 @@ def get_env(key: str, default: str | None = None) -> str:
     raise RuntimeError(f'A variável de ambiente "{key}" não foi estabelecida ou está vazia')
 
 
-def get_converter() -> DocumentConverter:
-    headers = {'Authorization': f'Bearer {get_env("HUGGINGFACEHUB_API_TOKEN")}'}
-    base = {
-        'model': get_env('HF_VISION_MODEL'),
-        'temperature': 0,
-    }
-
-    pdf_opts = VlmPipelineOptions(
-        enable_remote_services=True,
-        vlm_options=ApiVlmOptions(
-            url=HF_URL,
-            headers=headers,
-            params={**base, 'max_tokens': 4096},
-            prompt=(
-                'Transcreva fielmente todo o texto da página em português, '
-                'com títulos em Markdown. Descreva imagens e tabelas.'
-            ),
-            timeout=120,
-            scale=2.0,
-            response_format=ResponseFormat.MARKDOWN,
-        ),
-    )
-
-    pic_opts = PictureDescriptionApiOptions(
-        url=HF_URL,
-        headers=headers,
-        params={**base, 'max_tokens': 300},
-        prompt='Descreva a imagem em português, em até 3 frases.',
-        timeout=90,
-    )
-
-    office_opts = ConvertPipelineOptions(
-        enable_remote_services=True,
-        do_picture_description=True,
-        picture_description_options=pic_opts,
-    )
-
-    return DocumentConverter(
-        format_options={
-            InputFormat.PDF: PdfFormatOption(pipeline_cls=VlmPipeline, pipeline_options=pdf_opts),
-            InputFormat.DOCX: WordFormatOption(pipeline_options=office_opts),
-            InputFormat.PPTX: PowerpointFormatOption(pipeline_options=office_opts),
-        }
-    )
-
-
 def get_embedding_model() -> HuggingFaceEmbeddings:
     return HuggingFaceEmbeddings(
         model_name=get_env('HF_EMBEDDING_MODEL'),
@@ -123,12 +72,9 @@ def get_vector_store():
     return index, PineconeVectorStore(embedding=embeddings, index=index)
 
 
-def get_llm() -> ChatHuggingFace:
-    llm_endpoint = HuggingFaceEndpoint(
-        model=get_env('HF_MODEL'),
-        max_new_tokens=int(get_env('MAX_TOKENS')),
+def get_llm() -> ChatGroq:
+    return ChatGroq(
+        model=get_env('GROQ_MODEL'),
+        max_tokens=int(get_env('MAX_TOKENS')),
         temperature=0.1,
-        top_p=0.9,
-        provider='auto',
     )
-    return ChatHuggingFace(llm=llm_endpoint)

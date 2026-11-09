@@ -17,7 +17,7 @@ from pipeline.ingestion.converter import get_paths
 from pipeline.utils import Discipline, get_env, get_vector_store, setup_logger
 
 
-load_dotenv()
+load_dotenv(override=True)
 setup_logger(__name__, 'logs/embeddings.log')
 app = typer.Typer(name='EduIA-RAG')
 

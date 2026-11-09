@@ -7,7 +7,7 @@ from langchain.agents import create_agent
 from langchain.tools import BaseTool, tool
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import PromptTemplate
-from langchain_huggingface import ChatHuggingFace
+from langchain_groq import ChatGroq
 from langchain_pinecone import PineconeVectorStore
 from langgraph.graph.state import CompiledStateGraph
 from loguru import logger
@@ -79,7 +79,7 @@ def answer_questions(agent: CompiledStateGraph):
     logger.debug(f'{len(questions)} questão(ões) respondida(s)')
 
 
-def compare_answers(llm: ChatHuggingFace):
+def compare_answers(llm: ChatGroq):
     prompt = PromptTemplate(
         template="""Realize uma avaliação entre a primeira resposta (resposta obtida) em relação à segunda resposta (resposta esperada), fornecendo uma nota entre 0 e 10
         Formato da resposta:
