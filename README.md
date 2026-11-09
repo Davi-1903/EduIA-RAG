@@ -45,12 +45,11 @@ Pipeline de **RAG** (_Retrieval-Augmented Generation_, ou Geração Aumentada po
     ```env
     # ========================< API KEYS >========================
     PINECONE_API_KEY="<SUA-CHAVE-DE-API-DO-PINECONE>"
-    HUGGINGFACEHUB_API_TOKEN="<SUA-CHAVE-DE-API-DO-HUGGING-FACE>"
-
+    GROQ_API_KEY="<SUA-CHAVE-DE-API-DO-GROQ>"
+    
     # ===========================< IA >===========================
-    HF_EMBEDDING_MODEL="<MODELO-DE-EMBEDDING>"
-    HF_VISION_MODEL="<MODELO-PARA-OCR>"
-    HF_MODEL="<MODELO-DE-IA>"
+    HF_EMBEDDING_MODEL="Qwen/Qwen3-Embedding-0.6B"
+    GROQ_MODEL="<MODELO-DE-IA>"
     MAX_TOKENS=3000
     INDEX_NAME="eduia-rag"
     MIN_CHUNKS_LENGTH=50
@@ -160,10 +159,10 @@ Os materiais do curso de Informática para Internet serão adicionados primeiro.
 - [ ] **Análise e Projeto Orientados a Objetos**
 - [ ] **Projeto de Desenvolvimento de Sistemas para Internet**
 - [ ] **Princípios de Design e Projeto Gráfico**
-- [ ] **Design Web e Arquitetura da Informação**
+- [x] **Design Web e Arquitetura da Informação**
 - [ ] **Programação Estruturada e Orientada a Objetos**
 - [ ] **Banco de Dados**
-- [ ] **Programação de Sistemas para Internet**
+- [x] **Programação de Sistemas para Internet**
 - [ ] **Instalação e Configuração de Servidores**
 - [ ] **Projeto de Interface do Usuário**
 - [ ] **Programação Orientada a Serviços**

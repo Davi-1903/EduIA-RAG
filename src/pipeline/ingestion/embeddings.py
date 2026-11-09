@@ -34,12 +34,7 @@ def delete_old_chunks(index, file: Path, current_chunk_count: int):
 
 
 def add_documents_in_batches(vector_store: PineconeVectorStore, documents: list[Document]):
-    for n in tqdm(
-        range(0, len(documents), int(get_env('BATCH_SIZE'))),
-        desc='Indexando lotes',
-        unit='embedding',
-        leave=True,
-    ):
+    for n in range(0, len(documents), int(get_env('BATCH_SIZE'))):
         vector_store.add_documents(documents=documents[n : n + int(get_env('BATCH_SIZE'))])
 
 
